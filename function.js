@@ -103,17 +103,17 @@ function getMathResult(a, b) {
 	} else {
 		let stringNew = '';
 		for (let i = 1; i <= b; i++) {
-		if (i === b) {
-			stringNew += a * i;
-		} else {
+			if (i === b) {
+				stringNew += a * i;
+			} else {
 
 
-			stringNew += a * i + "---";
+				stringNew += a * i + "---";
+			}
 		}
+		console.log(stringNew);
+		return stringNew
 	}
-	console.log(stringNew);
-	return stringNew
-}
 }
 
 getMathResult(5, 3);
