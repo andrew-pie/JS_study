@@ -41,12 +41,19 @@ document.addEventListener('DOMContentLoaded', () => {
 		//проверить отмечен ли чекбокс
 		const favorite = checkbox.checked;
 
-		//добавить фильм в обьект
-		movieDB.movies.push(newFilm);
-		//сортировать
-		sortArr(movieDB.movies);
+		if (newFilm) {
 
-		createMovieList(movieDB.movies, movieList);
+			if (newFilm.length > 21) {
+				newFilm = `${newFilm.substring(0, 22)}...`;
+			}
+
+			//добавить фильм в обьект
+			movieDB.movies.push(newFilm);
+			//сортировать
+			sortArr(movieDB.movies);
+
+			createMovieList(movieDB.movies, movieList);
+		};
 
 		event.target.reset();
 
@@ -61,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// //2 вариант через функцию
 	// adv.forEach(function (item){
+	// eslint-disable-next-line linebreak-style
 	// 	item.remove();
 	// });
 
@@ -90,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			<li class="promo__interactive-item">${i + 1} ${film}
 				<div class="delete"></div>
 			</li>
-		`;
+	`;
 		});
 	}
 
