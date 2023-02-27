@@ -1,3 +1,12 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-use-before-define */
+/* eslint-disable one-var */
+/* eslint-disable strict */
+/* eslint-disable no-trailing-spaces */
+/* eslint-disable quotes */
+/* eslint-disable indent */
+/* eslint-disable padded-blocks */
+/* eslint-disable no-tabs */
 /* Задания на урок:
 
 1) Удалить все рекламные блоки со страницы (правая часть сайта)
@@ -8,6 +17,7 @@
 Реализовать только при помощи JS
 
 4) Список фильмов на странице сформировать на основании данных из этого JS файла.
+// eslint-disable-next-line no-trailing-spaces
 Отсортировать их по алфавиту 
 
 5) Добавить нумерацию выведенных фильмов */
@@ -22,8 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			"Лига справедливости",
 			"Ла-ла лэнд",
 			"Одержимость",
-			"Скотт Пилигрим против..."
-		]
+			"Скотт Пилигрим против...",
+		],
 	};
 
 	const adv = document.querySelectorAll('.promo__adv img'),
@@ -37,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	addForm.addEventListener('submit', (event) => {
 		event.preventDefault();
 
-		const newFilm = addInput.value;
-		//проверить отмечен ли чекбокс
+		let newFilm = addInput.value;
+		// проверить отмечен ли чекбокс
 		const favorite = checkbox.checked;
 
 		if (newFilm) {
@@ -47,21 +57,25 @@ document.addEventListener('DOMContentLoaded', () => {
 				newFilm = `${newFilm.substring(0, 22)}...`;
 			}
 
-			//добавить фильм в обьект
+			if (favorite) {
+				console.log("Добавляем любимый фильм");
+			}
+
+			// добавить фильм в обьект
 			movieDB.movies.push(newFilm);
-			//сортировать
+			// сортировать
 			sortArr(movieDB.movies);
 
 			createMovieList(movieDB.movies, movieList);
-		};
+		}
 
 		event.target.reset();
 
 	});
 
 	const deleteAdv = (arr) => {
-		//Remove ads
-		arr.forEach(item => {
+		// Remove ads
+		arr.forEach((item) => {
 			item.remove();
 		});
 	};
@@ -73,14 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	// });
 
 	const makeChanges = () => {
-		//Изменить жанр
+		// Изменить жанр
 		genre.textContent = 'драма';
 
-		//изменить задний фон
+		// изменить задний фон
 		poster.style.backgroundImage = 'url("img/bg.jpg")';
 	};
 
-	//одинаковая команда по добавлению
+	// одинаковая команда по добавлению
 	// a = a + 1;
 	// a += 1
 
@@ -89,10 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	};
 
 	function createMovieList(films, parent) {
-		//Удалить елементы из страницы;
+		// Удалить елементы из страницы;
 		parent.innerHTML = "";
+		sortArr(films);
 
-		//Поместить елементы на страницу
+		// Поместить елементы на страницу
 		films.forEach((film, i) => {
 			parent.innerHTML += `
 			<li class="promo__interactive-item">${i + 1} ${film}
@@ -100,11 +115,19 @@ document.addEventListener('DOMContentLoaded', () => {
 			</li>
 	`;
 		});
+
+		document.querySelectorAll('.delete').forEach((btn, i) => {
+			btn.addEventListener('click', () => {
+				btn.parentElement.remove();
+				movieDB.movies.splice(i, 1);
+
+				createMovieList(films, parent);
+			});
+		});
 	}
 
 	deleteAdv(adv);
 	makeChanges();
-	sortArr(movieDB.movies);
 	createMovieList(movieDB.movies, movieList);
 
 });
