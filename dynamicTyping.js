@@ -54,4 +54,5 @@ if (switcher) {
 console.log(typeof(Boolean('4')));
 
 // 3)
+// This code logs the type of data (in this case it will log 'boolean')
 console.log(typeof(!!"4444"));
