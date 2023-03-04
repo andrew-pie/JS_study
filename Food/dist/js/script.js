@@ -1,5 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
 
+	//Tabs
+
 	const tabs = document.querySelectorAll('.tabheader__item'),
 		tabsContent = document.querySelectorAll('.tabcontent'),
 		tabsParent = document.querySelector('.tabheader__items');
@@ -39,6 +41,80 @@ window.addEventListener('DOMContentLoaded', () => {
 			});
 		}
 	});
+
+	// Timer
+
+	//Створюємо дату кінця акції
+	const deadline = '2023-03-11';
+
+	//Переводимо отримані мс в різні величини
+	function getTimeRemaining(endtime) {
+		let days, hours, minutes, seconds;
+		//парсимо дату з стрічки і розраховуємо час до кінця акції
+		const t = Date.parse(endtime) - Date.parse(new Date());
+
+		//Перевірка якщо акція вже пройшла, то встановити таймер в 0 і не запускати відлік і розрахунки
+		if (t <= 0) {
+			days = 0;
+			hours = 0;
+			minutes = 0;
+			seconds = 0;
+		} else {
+			days = Math.floor(t / (1000 * 60 * 60 * 24)),
+				hours = Math.floor((t / (1000 * 60 * 60) % 24)),
+				minutes = Math.floor((t / 1000 / 60) % 60),
+				seconds = Math.floor((t / 1000) % 60);
+		}
+		//вертаємо це як об'єкт	
+		return {
+			'total': t,
+			'days': days,
+			'hours': hours,
+			'minutes': minutes,
+			'seconds': seconds
+		};
+	}
+
+	//Добавить 0 в начало, когда число меньше 10
+	function getZero(num) {
+		if (num >= 0 && num < 10) {
+			return `0${num}`;
+		} else {
+			return num;
+		}
+	}
+
+	//отримуємо html щоб замінити наші дані
+	function setClock(selector, endtime) {
+		const timer = document.querySelector(selector),
+			days = timer.querySelector('#days'),
+			hours = timer.querySelector('#hours'),
+			minutes = timer.querySelector('#minutes'),
+			seconds = timer.querySelector('#seconds'),
+			timeInterval = setInterval(updateClock, 1000);
+
+		//викликаємо функцію, щоб не було затримки в 1 секунду при завантаженні сторінки, яка вказана в інтервалі оновлення
+		updateClock();
+
+		// Створюємо фукнцію, яка оновлює таймер
+		function updateClock() {
+			const t = getTimeRemaining(endtime);
+
+			days.innerHTML = getZero(t.days);
+			hours.innerHTML = getZero(t.hours);
+			minutes.innerHTML = getZero(t.minutes);
+			seconds.innerHTML = getZero(t.seconds);
+
+			//Якщо час нижче 0, акція закінчилася, то зупиняємо таймер
+			if (t.total <= 0) {
+				clearInterval(timeInterval);
+			}
+		}
+	}
+
+	//Викликаємо фукнцію
+	setClock('.timer', deadline);
+
 });
 
 
