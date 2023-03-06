@@ -115,6 +115,39 @@ window.addEventListener('DOMContentLoaded', () => {
 	//Викликаємо фукнцію
 	setClock('.timer', deadline);
 
+
+	// Модальное окно
+
+	// const modalTrigger = document.querySelector('[data-modal'),
+	// 	modal = document.querySelector('.modal'),
+	// 	modalCloseBtn = document.querySelector('[data-close]');
+
+	// modalTrigger.addEventListener('click', () => {
+	// 	modal.classList.add('show');
+	// 	modal.classList.remove('hide');
+	// });
+
+	// Получем елементы со страницы
+	const modal = document.querySelector('.modal');
+	const openModalBtn = document.querySelector('[data-modal]');
+	const closeModalBtn = document.querySelector('[data-close]');
+
+
+	//открываем окно
+	const openModal = function () {
+		modal.classList.add('show');
+		modal.classList.remove('hide');
+	};
+
+	openModalBtn.addEventListener('click', openModal);
+
+	// закрываем окно
+	const closeModal = function () {
+		modal.classList.add('hide');
+		modal.classList.remove('show');
+	};
+
+	closeModalBtn.addEventListener('click', closeModal);
 });
 
 
