@@ -45,7 +45,7 @@ window.addEventListener('DOMContentLoaded', () => {
 	// Timer
 
 	//Створюємо дату кінця акції
-	const deadline = '2023-03-11';
+	const deadline = '2024-03-30';
 
 	//Переводимо отримані мс в різні величини
 	function getTimeRemaining(endtime) {
@@ -259,5 +259,67 @@ window.addEventListener('DOMContentLoaded', () => {
 		'menu__item',
 		'big'
 	).render();
+
+	// Forms
+
+	const forms = document.querySelectorAll('form');
+
+	const message = {
+		loading: 'loading',
+		success: 'Thank you!',
+		failure: 'Something get wrong'
+	};
+
+	// Подвязываем функцию под формы
+	forms.forEach(item => {
+		postData(item);
+	});
+
+	function postData(form) {
+		form.addEventListener('submit', (e) => {
+			// Отменяем стандартное поведение браузера
+			e.preventDefault();
+
+			// Сообщение пользователю про загрузку на сервер
+			const statusMessage = document.createElement('div');
+			statusMessage.classList.add('status');
+			statusMessage.textContent = message.loading;
+			form.append(statusMessage);
+
+			// Делаем http запрос к сепвепу
+			const request = new XMLHttpRequest();
+			request.open('POST', 'server.php');
+
+			// Создаем переменную, в которой будем отправлять информацию
+			request.setRequestHeader('Content-type', 'application/json');
+			const formData = new FormData(form);
+
+			//конвертировать Formdata в обычный обьект
+			const object = {};
+			formData.forEach(function (value, key) {
+				object[key] = value;
+			});
+
+			//Конвертируем данные в json
+			const json = JSON.stringify(object);
+
+			// Отправить запрос
+			request.send(json);
+
+			// Проверяем дошел ли запрос на сервер
+			request.addEventListener('load', () => {
+				if (request.status === 200) {
+					console.log(request.response);
+					statusMessage.textContent = message.success;
+					form.reset();
+					setTimeout(() => {
+						statusMessage.remove();
+					}, 3000);
+				} else {
+					statusMessage.textContent = message.failure;
+				}
+			});
+		});
+	}
 
 });
