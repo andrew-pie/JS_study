@@ -2,11 +2,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	//Tabs
 
-	const tabs = document.querySelectorAll('.tabheader__item'),
+	let tabs = document.querySelectorAll('.tabheader__item'),
 		tabsContent = document.querySelectorAll('.tabcontent'),
 		tabsParent = document.querySelector('.tabheader__items');
 
 	function hideTabContent() {
+
 		tabsContent.forEach(item => {
 			item.classList.add('hide');
 			item.classList.remove('show', 'fade');
@@ -226,42 +227,57 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
-	// Создаем обьект и вызываем метод рендер. Обьект после выполнения исчезнет
-	new MenuCard(
-		"img/tabs/vegy.jpg",
-		"vegy",
-		'Меню "Фитнес"',
-		'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-		9,
-		'.menu .container',
-	).render();
+	const getResource = async (url) => {
+		let res = await fetch(url);
 
-	new MenuCard(
-		"img/tabs/elite.jpg",
-		"elite",
-		'Меню “Премиум”',
-		'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-		14,
-		'.menu .container',
-		'menu__item',
-		'big'
-	).render();
+		if (!res.ok) {
+			throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+		}
 
-	new MenuCard(
-		"img/tabs/post.jpg",
-		"post",
-		'Меню "Постное"',
-		' Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-		21,
-		'.menu .container',
-		'menu__item',
-		'big'
-	).render();
+		return await res.json();
+	};
+
+	// // create cards v1
+	// getResource('http://localhost:3000/menu')
+	// 	.then(data => {
+	// 		// get data from db about cards
+	// 		data.forEach(({ img, altimg, title, descr, price }) => {
+	// 			//create new card and render
+	// 			new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+	// 		});
+	// 	});
+
+	// create cards v2
+	getResource('http://localhost:3000/menu')
+		.then(data => createCard(data));
+
+	function createCard(data) {
+		data.forEach(({ img, altimg, title, descr, price }) => {
+			const element = document.createElement('div');
+			price = price * 38;
+
+			element.classList.add('menu__item');
+
+			element.innerHTML = `
+				<img src=${img} alt=${altimg} />
+				<h3 class="menu__item-subtitle">${title}</h3>
+				<div class="menu__item-descr">
+				${descr}
+				</div>
+				<div class="menu__item-divider"></div>
+				<div class="menu__item-price">
+					<div class="menu__item-cost">Цена:</div>
+					<div class="menu__item-total"><span>${price}</span> грн/день</div>
+				</div>
+				`;
+
+			document.querySelector('.menu .container').append(element);
+		});
+	}
 
 	// Forms
 
 	const forms = document.querySelectorAll('form');
-
 	const message = {
 		loading: 'img/form/spinner.svg',
 		success: 'Thank you!',
@@ -270,8 +286,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	// Подвязываем функцию под формы
 	forms.forEach(item => {
-		postData(item);
+		bindPostData(item);
 	});
+
+	// async - что в коде используется асинхронный код, await - код, выполнение которого нужно дождаться
+	// This function is used to send a POST request to the specified URL with the provided data
+	const postData = async (url, data) => {
+		// Sends a request to the specified URL with the specified options
+		let res = await fetch(url, {
+			method: "POST", // Sets the HTTP request method to POST
+			headers: { // Specifies that the request body is in JSON format
+				'Content-Type': 'application/json'
+			},
+			body: data // Adds the provided data to the request body
+		});
+
+		return await res.json(); // Returns the response as JSON
+	};
+
 
 	// function postData(form) {
 	// 	form.addEventListener('submit', (e) => {
@@ -321,13 +353,13 @@ window.addEventListener('DOMContentLoaded', () => {
 	// 	});
 	// }
 
-	function postData(form) {
+	function bindPostData(form) {
 		form.addEventListener('submit', (e) => {
 			// Отменяем стандартное поведение браузера
 			e.preventDefault();
 
 			// Сообщение пользователю про загрузку на сервер
-			const statusMessage = document.createElement('img');
+			let statusMessage = document.createElement('img');
 			statusMessage.src = message.loading;
 			statusMessage.style.cssText = `
 				display: block;
@@ -335,26 +367,18 @@ window.addEventListener('DOMContentLoaded', () => {
 			`;
 			form.insertAdjacentElement('afterend', statusMessage);
 
-
-
 			// Создаем переменную, в которой будем отправлять информацию
 			const formData = new FormData(form);
 
 			//конвертировать Formdata в обычный обьект
-			const object = {};
-			formData.forEach(function (value, key) {
-				object[key] = value;
-			});
+			// .enteries() - сформировать массив с массивами
+			// .fromEntries - с массмва в обьект
+			// JSON.stringify - с обьекта в JSON
+			const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
 			// Отправить запрос
 			// Делаем http запрос к сепвепу
-			fetch('server.php', {
-				metod: "POST",
-				headers: {
-					'Content-type': 'application/json'
-				},
-				body: JSON.stringify(object)
-			}).then(data => data.text())
+			postData('http://localhost:3000/requests', json)
 				.then(data => {
 					console.log(data);
 					showThanksModal(message.success);
@@ -363,7 +387,7 @@ window.addEventListener('DOMContentLoaded', () => {
 					showThanksModal(message.failure);
 				}).finally(() => {
 					form.reset();
-				})
+				});
 		});
 	}
 
