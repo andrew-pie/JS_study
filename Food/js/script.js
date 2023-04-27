@@ -680,9 +680,12 @@ window.addEventListener('DOMContentLoaded', () => {
 		elements.forEach(elem => {
 			elem.addEventListener('click', (e) => {
 				if (e.target.getAttribute('data-ratio')) {
-					ratio = +e.target.getAttribute('data-ratio')
+					ratio = +e.target.getAttribute('data-ratio');
+					// save user choise to local storage
+					localStorage.setItem('ratio', +e.target.getAttribute('data-ratio'));
 				} else {
 					sex = e.target.getAttribute('id');
+					localStorage.setItem('sex', e.target.getAttribute('id'));
 				}
 
 				elements.forEach(elem => {
@@ -705,6 +708,14 @@ window.addEventListener('DOMContentLoaded', () => {
 		const input = document.querySelector(selector);
 
 		input.addEventListener('input', () => {
+
+			//if user type not digit change border to red
+			if (input.value.match(/\D/g)) {
+				input.style.border = "1px solid red";
+			} else {
+				input.style.border = "none";
+			}
+
 			// check what id user input
 			switch (input.getAttribute('id')) {
 				case 'height':
